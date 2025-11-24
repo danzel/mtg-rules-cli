@@ -1,18 +1,16 @@
 ﻿namespace MtgRulesCli;
 internal class Rules
 {
-	private const string Uri = "https://media.wizards.com/2025/downloads/MagicCompRules%2020250919.txt";
+	private const string Uri = "https://media.wizards.com/2025/downloads/MagicCompRules%2020251114.txt";
 	private static string FileName => new Uri(Uri).Segments.Last();
 
 	private readonly string[] _lines;
-
-	private int _sectionsStartLine;
-	private int _glossaryStartLine;
+	private readonly int _sectionsStartLine;
+	private readonly int _glossaryStartLine;
 
 	private Rules(string[] lines)
 	{
 		_lines = lines;
-
 
 		_sectionsStartLine = Array.FindIndex(_lines, line => line == "Credits") + 1;
 		_glossaryStartLine = Array.FindIndex(_lines, _sectionsStartLine, line => line == "Glossary") + 1;
