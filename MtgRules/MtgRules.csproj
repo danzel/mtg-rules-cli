@@ -6,5 +6,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+
+    <!-- .NET Tool configuration -->
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>mtg-rules</ToolCommandName>
+    <PackageId>MtgRules</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>danzel</Authors>
+    <Description>A CLI tool for looking up Magic: The Gathering rules</Description>
+    <PackageProjectUrl>https://github.com/danzel/mtg-rules-cli</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/danzel/mtg-rules-cli</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/"/>
+  </ItemGroup>
 </Project>
