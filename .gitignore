@@ -54,3 +54,6 @@ TestResult.xml
 nunit-*.xml
 .vs
 *.user
+
+# Embedded rules file (downloaded during CI build)
+MtgRules/Rules.txt

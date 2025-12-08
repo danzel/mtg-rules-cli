@@ -66,6 +66,14 @@ internal class Rules
 
 	public async static Task<Rules> Load()
 	{
+		// First, try to load from embedded resource
+		var embeddedLines = TryLoadFromEmbeddedResource();
+		if (embeddedLines != null)
+		{
+			return new Rules(embeddedLines);
+		}
+
+		// Fall back to downloading and caching
 		var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MtgRulesCli", FileName);
 
 		if (!File.Exists(path))
@@ -79,5 +87,22 @@ internal class Rules
 		var lines = await File.ReadAllLinesAsync(path);
 
 		return new Rules(lines);
+	}
+
+	private static string[]? TryLoadFromEmbeddedResource()
+	{
+		var assembly = typeof(Rules).Assembly;
+		var resourceName = "MtgRules.Rules.txt";
+
+		using var stream = assembly.GetManifestResourceStream(resourceName);
+		if (stream == null)
+		{
+			return null;
+		}
+
+		using var reader = new StreamReader(stream);
+		var content = reader.ReadToEnd();
+		// Split by line endings, keeping empty entries as they're needed for glossary parsing
+		return content.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 	}
 }

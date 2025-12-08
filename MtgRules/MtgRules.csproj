@@ -7,4 +7,7 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup Condition="Exists('Rules.txt')">
+    <EmbeddedResource Include="Rules.txt" />
+  </ItemGroup>
 </Project>

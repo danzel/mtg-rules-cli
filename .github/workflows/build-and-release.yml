@@ -1,0 +1,80 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        runtime: [win-x64, linux-x64, osx-x64, osx-arm64]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Download MTG Rules
+      run: |
+        curl -L "https://media.wizards.com/2025/downloads/MagicCompRules%2020251114.txt" -o MtgRules/Rules.txt
+        echo "Downloaded rules file:"
+        head -5 MtgRules/Rules.txt
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Publish
+      run: dotnet publish MtgRules/MtgRules.csproj -c Release -r ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -o publish/${{ matrix.runtime }}
+
+    - name: Create archive (Linux/macOS)
+      if: matrix.runtime != 'win-x64'
+      run: |
+        cd publish/${{ matrix.runtime }}
+        tar -czvf ../MtgRules-${{ matrix.runtime }}.tar.gz *
+
+    - name: Create archive (Windows)
+      if: matrix.runtime == 'win-x64'
+      run: |
+        cd publish/${{ matrix.runtime }}
+        zip -r ../MtgRules-${{ matrix.runtime }}.zip *
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: MtgRules-${{ matrix.runtime }}
+        path: publish/MtgRules-${{ matrix.runtime }}.*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/MtgRules-win-x64/MtgRules-win-x64.zip
+          artifacts/MtgRules-linux-x64/MtgRules-linux-x64.tar.gz
+          artifacts/MtgRules-osx-x64/MtgRules-osx-x64.tar.gz
+          artifacts/MtgRules-osx-arm64/MtgRules-osx-arm64.tar.gz
+        generate_release_notes: true
