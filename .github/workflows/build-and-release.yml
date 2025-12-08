@@ -10,9 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        runtime: [win-x64, linux-x64, osx-x64, osx-arm64]
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -35,46 +34,22 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Publish
-      run: dotnet publish MtgRules/MtgRules.csproj -c Release -r ${{ matrix.runtime }} --self-contained false -p:PublishSingleFile=true -o publish/${{ matrix.runtime }}
+      run: dotnet publish MtgRules/MtgRules.csproj -c Release -o publish
 
-    - name: Create archive (Linux/macOS)
-      if: matrix.runtime != 'win-x64'
+    - name: Create archive
       run: |
-        cd publish/${{ matrix.runtime }}
-        tar -czvf ../MtgRules-${{ matrix.runtime }}.tar.gz *
-
-    - name: Create archive (Windows)
-      if: matrix.runtime == 'win-x64'
-      run: |
-        cd publish/${{ matrix.runtime }}
-        zip -r ../MtgRules-${{ matrix.runtime }}.zip *
+        cd publish
+        zip -r ../MtgRules.zip *
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: MtgRules-${{ matrix.runtime }}
-        path: publish/MtgRules-${{ matrix.runtime }}.*
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-
-    permissions:
-      contents: write
-
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts
+        name: MtgRules
+        path: MtgRules.zip
 
     - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: |
-          artifacts/MtgRules-win-x64/MtgRules-win-x64.zip
-          artifacts/MtgRules-linux-x64/MtgRules-linux-x64.tar.gz
-          artifacts/MtgRules-osx-x64/MtgRules-osx-x64.tar.gz
-          artifacts/MtgRules-osx-arm64/MtgRules-osx-arm64.tar.gz
+        files: MtgRules.zip
         generate_release_notes: true
