@@ -36,7 +36,7 @@ echo "Configured NuGet proxy"
 # Install .NET 10 SDK (stable/GA)
 if [ ! -f ~/.dotnet/dotnet ]; then
     echo "Installing .NET 10 SDK..."
-    curl -fsSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --channel 10.0 --quality GA --install-dir ~/.dotnet
+    curl -fsSL https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh | bash -s -- --channel STS --install-dir ~/.dotnet
     echo "Installed: $(~/.dotnet/dotnet --version)"
 else
     echo ".NET SDK already installed: $(~/.dotnet/dotnet --version)"
