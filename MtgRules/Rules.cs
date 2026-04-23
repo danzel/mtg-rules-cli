@@ -1,8 +1,9 @@
 ﻿namespace MtgRulesCli;
+
 internal class Rules
 {
 	//https://magic.wizards.com/en/rules
-	private const string Uri = "https://media.wizards.com/2026/downloads/MagicCompRules%2020260227.txt";
+	private const string Uri = "https://media.wizards.com/2026/downloads/MagicCompRules%2020260417.txt";
 	private static string FileName => new Uri(Uri).Segments.Last();
 
 	private readonly string[] _lines;

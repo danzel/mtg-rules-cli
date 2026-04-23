@@ -2,7 +2,7 @@
 
 Build debug on windows.
 ```sh
-cp /mnt/c/Users/danzel/Desktop/Code/mtg-rules-cli/MtgRules/bin/Debug/net9.0/* ~/.local/bin
+cp /mnt/c/Users/danzel/Desktop/Code/mtg-rules-cli/MtgRules/bin/Debug/net10.0/* ~/.local/bin
 chmod +x ~/.local/bin/MtgRules.exe
 ```
 
